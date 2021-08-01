@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cupcakes</title>
+</head>
+<body>
+    <ul id="cupcakes-list"></ul>
+    <h1>Add a Cupcake</h1>
+    <form action="#">
+        <label for="flavor">Flavor</label>
+        <input type="text" name="flavor" id="flavor" placeholder="Enter a Flavor">
+        <label for="size">Size</label>
+        <input type="text" name="size" id="size" placeholder="Enter a Size">
+        <label for="rating">Rating</label>
+        <input type="text" name="rating" id="rating" placeholder="Enter a Rating">
+        <label for="image">Image</label>
+        <input type="url" name="image" id="image" placeholder="Enter an Image URL">
+        <button type="submit">Submit</button>
+    </form>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" 
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+            crossorigin="anonymous">
+    </script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="../static/js/index.js"></script>
+</body>
+</html>
