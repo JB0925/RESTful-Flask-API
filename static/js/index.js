@@ -14,6 +14,8 @@ class CupcakeManager {
         this.search = document.querySelector('#search');
         this.formSubmit = this.formSubmit.bind(this);
         this.searchCupcakes = this.searchCupcakes.bind(this);
+        this.searchCupcakesOnInput = this.searchCupcakesOnInput.bind(this);
+        this.debounce = this.debounce.bind(this);
     }
 
     loadCupcakes = async function() {
@@ -52,9 +54,33 @@ class CupcakeManager {
         this.search.value = '';
         this.queryType.selectedIndex = 0;
     }
-}
+
+    debounce(func) {
+        let timer;
+        return () => {
+            clearTimeout(timer),
+            timer = setTimeout(() => {this.searchCupcakesOnInput()}, 500);
+        }
+    }
+
+    async searchCupcakesOnInput(e) {
+        const data = {
+            query: this.queryType.value,
+            search: this.search.value
+        }
+        searchList.empty();
+        if (this.search.value !== '') {
+            const res = await axios.post('http://127.0.0.1:5000/api/cupcakes/search', data);
+            let searchResults = res.data.cupcakes;
+            searchResults.map(c => searchList.append(`<li>${c.flavor}</li>`));
+            }
+        
+        this.search.value = '';
+        this.queryType.selectedIndex = 0;
+    };
+};
 
 const manager = new CupcakeManager();
 $(document).ready(manager.loadCupcakes);
 form.on('submit', manager.formSubmit);
-searchForm.on('submit', manager.searchCupcakes);
+searchInput.on('input', manager.debounce(manager.searchCupcakesOnInput));
