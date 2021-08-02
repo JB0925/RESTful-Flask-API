@@ -59,3 +59,16 @@ def delete_cupcake(cupcake_id):
 @app.route('/', methods=['GET', 'POST'])
 def home():
     return render_template('base.html')
+
+
+@app.route('/api/cupcakes/search', methods=['GET', 'POST'])
+def search_cupcake():
+    search_type = request.json['query']
+    term = request.json['search']
+    if search_type == 'flavor':
+        cupcake_search = Cupcake.query.filter(Cupcake.flavor.ilike(f'%{term}%')).all()
+    elif search_type == 'size':
+        cupcake_search = Cupcake.query.filter(Cupcake.size.ilike(f'%{term}%')).all()
+    else:
+        cupcake_search = Cupcake.query.filter_by(rating=term).all()
+    return jsonify(cupcakes=[cupcake.serialize() for cupcake in cupcake_search])

@@ -1,31 +1,60 @@
-const cupcakeList = $('ul');
-const form = $('form')
-const flavor = $('#flavor');
-const size = $('#size');
-const rating = $('#rating');
-const image = $('#image');
+const cupcakeList = $('#cupcakes-list');
+const form = $('#add');
+const searchForm = $('#search-form');
+const searchList = $('#cupcake-search');
+const searchInput = $('#search');
 
-loadCupcakes = async function() {
-    const data = await axios.get('http://127.0.0.1:5000/api/cupcakes');
-    let cupcakeData = data.data.cupcakes;
-    cupcakeData.map(c => cupcakeList.append(`<li>${c.flavor}</li>`));
-};
+class CupcakeManager {
+    constructor() {
+        this.flavor = document.querySelector('#flavor');
+        this.size = document.querySelector('#size');
+        this.rating = document.querySelector('#rating');
+        this.image = document.querySelector('#image');
+        this.queryType = document.querySelector('#query');
+        this.search = document.querySelector('#search');
+        this.formSubmit = this.formSubmit.bind(this);
+        this.searchCupcakes = this.searchCupcakes.bind(this);
+    }
 
-$(document).ready(loadCupcakes);
-
-form.on('submit', async function(e) {
-    e.preventDefault();
-    const data = {
-        flavor: flavor.val(),
-        size: size.val(),
-        rating: rating.val(),
-        image: image.val(),
+    loadCupcakes = async function() {
+        const data = await axios.get('http://127.0.0.1:5000/api/cupcakes');
+        let cupcakeData = data.data.cupcakes;
+        cupcakeData.map(c => cupcakeList.append(`<li>${c.flavor}</li>`));
     };
-    flavor.val('');
-    size.val('')
-    rating.val('');
-    image.val('');
-    await axios.post('http://127.0.0.1:5000/api/cupcakes', data);
-    cupcakeList.append(`<li>${data.flavor}</li>`)
-    return;
-});
+
+    async formSubmit(e) {
+        e.preventDefault();
+        const data = {
+            flavor: this.flavor.value,
+            size: this.size.value,
+            rating: this.rating.value,
+            image: this.image.value,
+        };
+        this.flavor.value = '';
+        this.size.value = '';
+        this.rating.value = '';
+        this.image.value = '';
+        await axios.post('http://127.0.0.1:5000/api/cupcakes', data);
+        cupcakeList.append(`<li>${data.flavor}</li>`)
+        return;
+    }
+
+    async searchCupcakes(e) {
+        e.preventDefault();
+        const data = {
+            query: this.queryType.value,
+            search: this.search.value
+        }
+        const res = await axios.post('http://127.0.0.1:5000/api/cupcakes/search', data);
+        let searchResults = res.data.cupcakes;
+        searchList.empty();
+        searchResults.map(c => searchList.append(`<li>${c.flavor}</li>`));
+        this.search.value = '';
+        this.queryType.selectedIndex = 0;
+    }
+}
+
+const manager = new CupcakeManager();
+$(document).ready(manager.loadCupcakes);
+form.on('submit', manager.formSubmit);
+searchForm.on('submit', manager.searchCupcakes);
